@@ -314,11 +314,15 @@ return json_encode($response);
 
 function add() {
     $cookie = $_POST['cookie'];
-    $name = $_POST['name'];
+    $name = $_POST['name']; 
     $vip_type = $_POST['vip_type'];
-    $currentDateTime = date('Y-m-d H:i:s'); 
-    $sql = "INSERT INTO `bd_user` (`id`, `name`, `cookie`, `add_time`, `use`, `state`, `switch`, `vip_type`) 
-            VALUES (NULL, '$name', '$cookie', '$currentDateTime', '$currentDateTime', '-2', '0', '$vip_type');";
+    $currentDateTime = date('Y-m-d H:i:s');
+    
+    $connectDatabase = connectDatabase();
+    $stmt = $connectDatabase->prepare("INSERT INTO `bd_user` (`id`, `name`, `cookie`, `add_time`, `use`, `state`, `switch`, `vip_type`) 
+            VALUES (NULL, ?, ?, ?, ?, '-2', '0', ?)");
+    $stmt->bind_param("sssss", $name, $cookie, $currentDateTime, $currentDateTime, $vip_type);
+    $sql = $stmt;
 
     $connectDatabase = connectDatabase();
     $result = $connectDatabase->query($sql);
