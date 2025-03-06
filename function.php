@@ -124,10 +124,12 @@ function importSQLFile($connection) {
 }
 
 function delete_bd_user() {
-    $id=$_POST['id'];
+    $id = $_POST['id'];
     $connectDatabase = connectDatabase();
-    $sql = "DELETE FROM bd_user WHERE `bd_user`.`id` = $id";
-    $result = $connectDatabase->query($sql);
+    $sql = "DELETE FROM bd_user WHERE `bd_user`.`id` = ?";
+    $stmt = $connectDatabase->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $result = $stmt->execute();
 
     if ($result === true) {
     $response["success"] = true;
@@ -290,12 +292,14 @@ $connectDatabase->close();
 return json_encode($response);
 }
 function switch_bd_user(){
-$id=$_POST['id'];
-$switch=$_POST['switch'];
+$id = $_POST['id'];
+$switch = $_POST['switch'];
 $switch = ($switch === '-1') ? '0' : (($switch === '0') ? '-1' : $switch);
-$sql="UPDATE `bd_user` SET `switch` = '$switch' WHERE `bd_user`.`id` = $id;";
 $connectDatabase = connectDatabase();
-$result = $connectDatabase->query($sql);
+$sql = "UPDATE `bd_user` SET `switch` = ? WHERE `bd_user`.`id` = ?";
+$stmt = $connectDatabase->prepare($sql);
+$stmt->bind_param("si", $switch, $id);
+$result = $stmt->execute();
    if ($result === true) {
     $response["success"] = true;
     $response["message"] ="更改状态成功";
